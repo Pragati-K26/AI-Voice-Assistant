@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.db
+*.sqlite
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models
+*.bin
+*.pt
+*.pth
+*.onnx
+models/
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
