@@ -7,6 +7,10 @@ An AI-powered Voice Banking Assistant that enables users to perform secure finan
 - 🎤 **Voice-based Banking Operations**: Check balances, transfer funds, view transactions
 - 🔒 **Secure Authentication**: Voice PIN, OTP verification, biometric support
 - 💬 **Natural Language Understanding**: Context-aware conversations with intent recognition
+- 📊 **Personalized Financial Assistant**: Spending tracking, categorization, and insights
+- 🛡️ **Fraud Detection**: Real-time suspicious activity alerts
+- 🔔 **Proactive Notifications**: Low balance, payment due, and transaction alerts
+- 🤖 **Multi-turn Conversations**: Context-aware dialogues with error handling
 - 🌍 **Multilingual Support**: Support for multiple languages and accents
 - 🚀 **Google Cloud Deployment**: Fully configured for Cloud Run and Cloud Functions
 

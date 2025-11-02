@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'AI Voice Banking Assistant',
   description: 'Secure voice-based banking operations',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
@@ -12,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   )
 }

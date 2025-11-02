@@ -17,6 +17,9 @@ from app.services.intent_recognition import intent_service
 from app.services.dialogue_manager import dialogue_manager
 from app.services.text_to_speech import tts_service
 from app.services.banking_service import banking_service
+from app.services.spending_tracker import spending_tracker
+from app.services.fraud_detector import fraud_detector
+from app.services.notification_service import notification_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -82,6 +85,50 @@ async def process_voice_request(
         entities=entities,
         user_balance=balance
     )
+    
+    # Step 4: Execute actions that don't require OTP
+    if action_data:
+        action = action_data.get("action")
+        if action == "spending_summary":
+            try:
+                period = action_data.get("period", "month")
+                summary = spending_tracker.get_spending_summary(db, current_user.id, period)
+                # Enhance response with actual data
+                if summary.get("total_spending"):
+                    response_text = (
+                        f"Your spending summary for the last {period}: "
+                        f"Total spending: ₹{summary['total_spending']:,.2f}, "
+                        f"Total income: ₹{summary['total_income']:,.2f}, "
+                        f"Savings: ₹{summary['savings']:,.2f}. "
+                        f"Top spending category: {summary.get('top_category', 'N/A')}."
+                    )
+            except Exception as e:
+                logger.error(f"Error getting spending summary: {str(e)}")
+        
+        elif action == "category_spending":
+            try:
+                category = action_data.get("category", "all")
+                period = action_data.get("period", "month")
+                spending = spending_tracker.get_category_spending(db, current_user.id, category, period)
+                if spending.get("amount"):
+                    response_text = (
+                        f"You spent ₹{spending['amount']:,.2f} on {category} "
+                        f"in the last {period}."
+                    )
+            except Exception as e:
+                logger.error(f"Error getting category spending: {str(e)}")
+        
+        elif action == "view_notifications":
+            try:
+                notifications = notification_service.get_user_notifications(db, current_user.id)
+                if notifications:
+                    response_text = f"You have {len(notifications)} notifications. " + ". ".join([
+                        n.get("message", "") for n in notifications[:3]
+                    ])
+                else:
+                    response_text = "You have no new notifications."
+            except Exception as e:
+                logger.error(f"Error getting notifications: {str(e)}")
     
     # Step 4: Generate audio response (optional)
     # In a real implementation, you might want to store audio and return URL
@@ -206,6 +253,17 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
             # Execute action if needed
             if action_data and action_data.get("action") == "transfer_funds" and action_data.get("otp"):
                 try:
+                    # Check for fraud before transfer
+                    fraud_alerts = fraud_detector.detect_fraud(
+                        db, current_user.id, action_data["amount"], action_data.get("recipient_name")
+                    )
+                    if fraud_alerts:
+                        await websocket.send_json({
+                            "type": "fraud_alert",
+                            "alerts": fraud_alerts,
+                            "requires_confirmation": True
+                        })
+                    
                     result = banking_service.transfer_funds(
                         db=db,
                         user_id=current_user.id,
@@ -224,6 +282,42 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                         "success": False,
                         "error": str(e)
                     })
+            
+            # Handle spending summary action
+            elif action_data and action_data.get("action") == "spending_summary":
+                try:
+                    period = action_data.get("period", "month")
+                    summary = spending_tracker.get_spending_summary(db, current_user.id, period)
+                    await websocket.send_json({
+                        "type": "spending_summary",
+                        "data": summary
+                    })
+                except Exception as e:
+                    logger.error(f"Error getting spending summary: {str(e)}")
+            
+            # Handle category spending action
+            elif action_data and action_data.get("action") == "category_spending":
+                try:
+                    category = action_data.get("category", "all")
+                    period = action_data.get("period", "month")
+                    spending = spending_tracker.get_category_spending(db, current_user.id, category, period)
+                    await websocket.send_json({
+                        "type": "category_spending",
+                        "data": spending
+                    })
+                except Exception as e:
+                    logger.error(f"Error getting category spending: {str(e)}")
+            
+            # Handle notifications action
+            elif action_data and action_data.get("action") == "view_notifications":
+                try:
+                    notifications = notification_service.get_user_notifications(db, current_user.id)
+                    await websocket.send_json({
+                        "type": "notifications",
+                        "data": notifications
+                    })
+                except Exception as e:
+                    logger.error(f"Error getting notifications: {str(e)}")
     
     except WebSocketDisconnect:
         logger.info("WebSocket disconnected")

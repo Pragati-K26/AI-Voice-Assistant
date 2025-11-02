@@ -26,9 +26,16 @@ BANKING_INTENTS = {
     "credit_limit_inquiry": 5,
     "set_reminder": 6,
     "payment_alert": 7,
-    "greeting": 8,
-    "goodbye": 9,
-    "other": 10
+    "spending_summary": 8,
+    "category_spending": 9,
+    "fraud_alert": 10,
+    "view_notifications": 11,
+    "setup_auto_pay": 12,
+    "request_chequebook": 13,
+    "manage_card": 14,
+    "greeting": 15,
+    "goodbye": 16,
+    "other": 17
 }
 
 REVERSE_INTENTS = {v: k for k, v in BANKING_INTENTS.items()}
@@ -42,7 +49,14 @@ INTENT_KEYWORDS = {
     "interest_inquiry": ["interest", "interest rate", "rate of interest"],
     "credit_limit_inquiry": ["credit limit", "credit card limit", "limit"],
     "set_reminder": ["reminder", "remind me", "alert"],
-    "payment_alert": ["alert", "notification", "payment reminder"]
+    "payment_alert": ["alert", "notification", "payment reminder"],
+    "spending_summary": ["spending", "expenses", "how much spent", "spending summary", "expense report"],
+    "category_spending": ["spend on food", "spent on", "expenses for", "how much on"],
+    "fraud_alert": ["fraud", "suspicious", "unusual", "fraudulent"],
+    "view_notifications": ["notifications", "alerts", "notify me", "show alerts"],
+    "setup_auto_pay": ["auto pay", "automatic payment", "auto bill", "recurring payment"],
+    "request_chequebook": ["cheque book", "chequebook", "request cheque", "order cheque"],
+    "manage_card": ["block card", "unblock card", "card limit", "card settings"]
 }
 
 
@@ -120,6 +134,60 @@ class IntentRecognitionService:
                 if match:
                     entities["recipient_name"] = match.group(1)
                     break
+        
+        # Extract category for spending queries
+        if intent == "category_spending":
+            category_patterns = [
+                r'(?:spent|spend|expenses?)\s+(?:on|for)\s+(\w+)',
+                r'(\w+)\s+(?:spending|expenses?)',
+            ]
+            for pattern in category_patterns:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    entities["category"] = match.group(1).lower()
+                    break
+        
+        # Extract period for spending queries
+        if intent in ["spending_summary", "category_spending"]:
+            period_patterns = [
+                r'(?:last|past)\s+(?:week|month|year)',
+                r'this\s+(?:week|month|year)',
+            ]
+            text_lower = text.lower()
+            if "last month" in text_lower or "past month" in text_lower:
+                entities["period"] = "last_month"
+            elif "last week" in text_lower or "past week" in text_lower:
+                entities["period"] = "last_week"
+            elif "last year" in text_lower or "past year" in text_lower:
+                entities["period"] = "last_year"
+            elif "this month" in text_lower:
+                entities["period"] = "month"
+            elif "this week" in text_lower:
+                entities["period"] = "week"
+        
+        # Extract bill type for auto-pay
+        if intent == "setup_auto_pay":
+            bill_types = ["electricity", "phone", "water", "internet", "gas"]
+            text_lower = text.lower()
+            for bill_type in bill_types:
+                if bill_type in text_lower:
+                    entities["bill_type"] = bill_type
+                    break
+        
+        # Extract card action
+        if intent == "manage_card":
+            text_lower = text.lower()
+            if "block" in text_lower:
+                entities["action"] = "block"
+            elif "unblock" in text_lower:
+                entities["action"] = "unblock"
+            elif "limit" in text_lower:
+                entities["action"] = "set_limit"
+            
+            if "debit" in text_lower:
+                entities["card_type"] = "debit"
+            elif "credit" in text_lower:
+                entities["card_type"] = "credit"
         
         # Extract account number
         account_pattern = r'(?:account\s*)?(?:number\s*)?(\d{4,16})'

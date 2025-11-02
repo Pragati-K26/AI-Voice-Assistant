@@ -45,9 +45,15 @@ export default function VoiceAssistant() {
           }
         }
 
-        setTranscript(interimTranscript || finalTranscript)
+        // Update transcript display in real-time
+        if (interimTranscript) {
+          setTranscript(interimTranscript)
+        } else if (finalTranscript) {
+          setTranscript(finalTranscript.trim())
+        }
 
-        if (finalTranscript) {
+        // Process final transcript
+        if (finalTranscript.trim()) {
           processVoiceInput(finalTranscript.trim())
         }
       }
@@ -55,6 +61,33 @@ export default function VoiceAssistant() {
       recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error)
         setIsListening(false)
+        setTranscript('')
+        
+        // Provide user-friendly error messages
+        let errorMessage = 'Speech recognition error occurred'
+        switch (event.error) {
+          case 'no-speech':
+            errorMessage = 'No speech detected. Please try again.'
+            break
+          case 'audio-capture':
+            errorMessage = 'Microphone not found. Please check your microphone settings.'
+            break
+          case 'not-allowed':
+            errorMessage = 'Microphone permission denied. Please allow microphone access.'
+            break
+          case 'network':
+            errorMessage = 'Network error. Please check your connection.'
+            break
+        }
+        
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: 'assistant',
+            text: errorMessage,
+            timestamp: new Date(),
+          },
+        ])
       }
 
       recognitionRef.current.onend = () => {
@@ -77,7 +110,12 @@ export default function VoiceAssistant() {
     if (recognitionRef.current && !isListening) {
       setTranscript('')
       setIsListening(true)
-      recognitionRef.current.start()
+      try {
+        recognitionRef.current.start()
+      } catch (error) {
+        console.error('Error starting speech recognition:', error)
+        setIsListening(false)
+      }
     }
   }
 
@@ -138,24 +176,34 @@ export default function VoiceAssistant() {
       }
     } catch (error: any) {
       console.error('Error processing voice input:', error)
+      const errorMessage = error.response?.data?.detail || error.message || 'Sorry, I encountered an error. Please try again.'
       setMessages((prev) => [
         ...prev,
         {
           type: 'assistant',
-          text: 'Sorry, I encountered an error. Please try again.',
+          text: errorMessage,
           timestamp: new Date(),
         },
       ])
     } finally {
       setIsProcessing(false)
-      setTranscript('')
+      // Clear transcript after a short delay to let user see what was processed
+      setTimeout(() => setTranscript(''), 1000)
     }
   }
 
   const handleTextInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-      processVoiceInput(e.currentTarget.value.trim())
+    if (e.key === 'Enter' && e.currentTarget.value.trim() && !isListening) {
+      const inputValue = e.currentTarget.value.trim()
+      setTranscript('')
+      processVoiceInput(inputValue)
       e.currentTarget.value = ''
+    }
+  }
+  
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isListening) {
+      setTranscript(e.target.value)
     }
   }
 
@@ -284,12 +332,13 @@ export default function VoiceAssistant() {
                 placeholder={
                   isListening
                     ? 'Listening...'
-                    : transcript || 'Type your message or click mic to speak'
+                    : 'Type your message or click mic to speak'
                 }
                 value={transcript}
+                onChange={handleTextChange}
                 readOnly={isListening}
                 onKeyDown={handleTextInput}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               {isProcessing && (
                 <p className="text-xs text-gray-500 mt-1">Processing...</p>

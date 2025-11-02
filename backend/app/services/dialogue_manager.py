@@ -1,10 +1,12 @@
 """
 Dialogue Management service for handling conversation flow
+Enhanced with error handling, clarification, and multi-turn conversations
 """
 from typing import Dict, List, Optional, Tuple
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
+import difflib
 
 logger = logging.getLogger(__name__)
 
@@ -125,10 +127,28 @@ class DialogueManager:
         elif intent == "payment_alert":
             return self._handle_payment_alert(session, user_text, entities)
         
+        elif intent == "spending_summary":
+            return self._handle_spending_summary(session, user_text, entities)
+        
+        elif intent == "category_spending":
+            return self._handle_category_spending(session, user_text, entities)
+        
+        elif intent == "view_notifications":
+            return self._handle_view_notifications(session, user_text)
+        
+        elif intent == "setup_auto_pay":
+            return self._handle_setup_auto_pay(session, user_text, entities)
+        
+        elif intent == "request_chequebook":
+            return self._handle_request_chequebook(session, user_text)
+        
+        elif intent == "manage_card":
+            return self._handle_manage_card(session, user_text, entities)
+        
         else:
-            response = "I'm not sure I understand. Could you please rephrase your request?"
-            session.add_to_history(user_text, intent, response)
-            return response, {}
+            # Try error handling with suggestions
+            response, action_data = self.handle_error_clarification(session, user_text, "invalid_command")
+            return response, action_data
     
     def _handle_check_balance(self, session: DialogueState, user_text: str, balance: float) -> Tuple[str, Dict]:
         """Handle balance check"""
@@ -270,6 +290,120 @@ class DialogueManager:
         response = "Payment alerts have been activated. You'll receive notifications for all transactions."
         session.add_to_history(user_text, "payment_alert", response)
         return response, {"action": "payment_alert"}
+    
+    def suggest_correction(self, user_text: str, valid_options: List[str]) -> Optional[str]:
+        """
+        Suggest corrections for user input (error handling)
+        
+        Args:
+            user_text: User's input text
+            valid_options: List of valid options
+        
+        Returns:
+            Suggested correction or None
+        """
+        user_lower = user_text.lower()
+        matches = difflib.get_close_matches(user_lower, [opt.lower() for opt in valid_options], n=1, cutoff=0.6)
+        
+        if matches:
+            original_option = next(opt for opt in valid_options if opt.lower() == matches[0])
+            return original_option
+        
+        return None
+    
+    def handle_error_clarification(self, session: DialogueState, user_text: str, error_type: str) -> Tuple[str, Dict]:
+        """
+        Handle errors with helpful clarification
+        
+        Args:
+            session: Dialogue session
+            user_text: User input
+            error_type: Type of error
+        
+        Returns:
+            Clarification response
+        """
+        clarifications = {
+            "insufficient_info": "I need a bit more information. Could you please provide more details?",
+            "invalid_amount": "I didn't understand the amount. Please say the amount clearly, for example: 'five thousand rupees' or '₹5000'",
+            "invalid_recipient": "I couldn't find that recipient. Did you mean one of your saved beneficiaries?",
+            "invalid_command": "I'm not sure I understand. Could you try rephrasing? For example: 'Transfer money' or 'Check balance'",
+            "network_error": "I'm having trouble connecting. Please try again in a moment.",
+            "timeout": "The request is taking too long. Please try again."
+        }
+        
+        response = clarifications.get(error_type, "Something went wrong. Please try again.")
+        
+        # Add helpful suggestions
+        if error_type == "invalid_command":
+            response += " You can ask me to: check balance, transfer money, view transactions, spending summary, or inquire about loans."
+        
+        session.add_to_history(user_text, "error", response)
+        return response, {"error": error_type, "requires_clarification": True}
+    
+    def _handle_spending_summary(self, session: DialogueState, user_text: str, entities: Dict) -> Tuple[str, Dict]:
+        """Handle spending summary request"""
+        period = entities.get("period", "month")
+        response = f"Fetching your spending summary for the last {period}..."
+        session.add_to_history(user_text, "spending_summary", response)
+        return response, {"action": "spending_summary", "period": period}
+    
+    def _handle_category_spending(self, session: DialogueState, user_text: str, entities: Dict) -> Tuple[str, Dict]:
+        """Handle category-specific spending inquiry"""
+        category = entities.get("category", "all")
+        period = entities.get("period", "month")
+        response = f"Fetching your {category} spending for the last {period}..."
+        session.add_to_history(user_text, "category_spending", response)
+        return response, {"action": "category_spending", "category": category, "period": period}
+    
+    def _handle_view_notifications(self, session: DialogueState, user_text: str) -> Tuple[str, Dict]:
+        """Handle notification viewing request"""
+        response = "Fetching your notifications..."
+        session.add_to_history(user_text, "view_notifications", response)
+        return response, {"action": "view_notifications"}
+    
+    def _handle_setup_auto_pay(self, session: DialogueState, user_text: str, entities: Dict) -> Tuple[str, Dict]:
+        """Handle auto-pay setup"""
+        bill_type = entities.get("bill_type")
+        if not bill_type:
+            response = "Which bill would you like to set up auto-pay for?"
+            session.pending_action = "setup_auto_pay"
+            return response, {}
+        
+        response = f"Auto-pay has been set up for {bill_type} bills. You'll be notified before each payment."
+        session.add_to_history(user_text, "setup_auto_pay", response)
+        return response, {"action": "setup_auto_pay", "bill_type": bill_type}
+    
+    def _handle_request_chequebook(self, session: DialogueState, user_text: str) -> Tuple[str, Dict]:
+        """Handle cheque book request"""
+        response = "Cheque book request submitted. You'll receive it in 5-7 business days."
+        session.add_to_history(user_text, "request_chequebook", response)
+        return response, {"action": "request_chequebook"}
+    
+    def _handle_manage_card(self, session: DialogueState, user_text: str, entities: Dict) -> Tuple[str, Dict]:
+        """Handle card management (block/unblock/set limit)"""
+        action = entities.get("action", "view")
+        card_type = entities.get("card_type", "debit")
+        
+        if action == "block":
+            response = f"Your {card_type} card will be blocked. Please confirm."
+            session.requires_confirmation = True
+            session.pending_action = "block_card"
+            return response, {}
+        elif action == "unblock":
+            response = f"Your {card_type} card has been unblocked."
+        elif action == "set_limit":
+            limit = entities.get("limit")
+            if not limit:
+                response = "What spending limit would you like to set?"
+                session.pending_action = "set_card_limit"
+                return response, {}
+            response = f"Spending limit set to ₹{limit:,.2f} for your {card_type} card."
+        else:
+            response = f"Here are your {card_type} card details."
+        
+        session.add_to_history(user_text, "manage_card", response)
+        return response, {"action": "manage_card", "card_action": action}
 
 
 # Global instance
