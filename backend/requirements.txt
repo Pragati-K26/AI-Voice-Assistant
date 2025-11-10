@@ -7,7 +7,7 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 
 # Speech Processing
-openai-whisper==20231117
+openai-whisper
 soundfile==0.12.1
 
 # NLP & ML

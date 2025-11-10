@@ -161,28 +161,31 @@ export default function VoiceChat() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg p-6">
+    <div className="flex flex-col h-full glass rounded-xl p-6 animate-fadeInScale">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-4 text-white mb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-1">Voice Assistant</h2>
-            <p className="text-blue-100">Talk to your banking assistant</p>
-          </div>
-          <div className="bg-white/20 rounded-full p-3">
-            <MicIcon />
+      <div className="glass rounded-lg p-4 mb-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold mb-1 gradient-text">Voice Assistant</h2>
+              <p className="text-white/70">Talk to your banking assistant</p>
+            </div>
+            <div className="glass rounded-full p-3">
+              <MicIcon />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto mb-4 bg-white rounded-lg p-4 shadow-inner">
+      <div className="flex-1 overflow-y-auto mb-4 glass rounded-lg p-4">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-center">
             <div>
               <div className="text-6xl mb-4">👋</div>
-              <p className="text-lg font-medium text-gray-700 mb-2">Hello! I'm your voice banking assistant.</p>
-              <p className="text-sm text-gray-500">Try saying: "Check my balance" or "Show my spending summary"</p>
+              <p className="text-lg font-medium text-white mb-2">Hello! I'm your voice banking assistant.</p>
+              <p className="text-sm text-white/70">Try saying: "Check my balance" or "Show my spending summary"</p>
             </div>
           </div>
         ) : (
@@ -195,13 +198,13 @@ export default function VoiceChat() {
                 <div
                   className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                     message.type === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-blue-500/80 text-white'
+                      : 'glass text-white/90'
                   }`}
                 >
                   <p className="text-sm">{message.text}</p>
                   {message.intent && message.type === 'assistant' && (
-                    <p className="text-xs mt-1 opacity-75">Intent: {message.intent}</p>
+                    <p className="text-xs mt-1 text-white/60">Intent: {message.intent}</p>
                   )}
                 </div>
               </div>
@@ -239,10 +242,10 @@ export default function VoiceChat() {
             onChange={handleTextChange}
             readOnly={isListening}
             onKeyDown={handleTextInput}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 glass rounded-lg text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           />
           {isProcessing && (
-            <p className="text-xs text-blue-600 mt-1">Processing...</p>
+            <p className="text-xs text-blue-300 mt-1">Processing...</p>
           )}
         </div>
       </div>

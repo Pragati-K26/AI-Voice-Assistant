@@ -25,24 +25,28 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+      
+      <div className="glass rounded-2xl p-8 w-full max-w-md relative z-10 animate-fadeInScale">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold mb-2 gradient-text">
             Voice Banking Assistant
           </h1>
-          <p className="text-gray-600">Sign in to continue</p>
+          <p className="text-white/70">Sign in to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="glass bg-red-500/20 border-red-400/50 text-red-200 px-4 py-3 rounded-xl animate-slideInRight">
               {error}
             </div>
           )}
 
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label htmlFor="username" className="block text-sm font-medium text-white/90 mb-2">
               Username
             </label>
             <input
@@ -51,13 +55,13 @@ export default function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 glass rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
               placeholder="Enter username"
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
               Password
             </label>
             <input
@@ -66,7 +70,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 glass rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
               placeholder="Enter password"
             />
           </div>
@@ -74,18 +78,25 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full glass-hover bg-gradient-to-r from-blue-500/80 to-purple-500/80 hover:from-blue-500 hover:to-purple-500 text-white py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-400/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] hover:shadow-glow-blue"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Signing in...
+              </span>
+            ) : 'Sign In'}
           </button>
         </form>
 
-        <div className="mt-6 text-sm text-gray-600 text-center">
-          <p>Demo credentials:</p>
-          <p className="font-mono text-xs mt-2">
-            Username: demo_user<br />
-            Password: demo123
-          </p>
+        <div className="mt-6 text-sm text-center">
+          <p className="text-white/60 mb-2">Demo credentials:</p>
+          <div className="glass rounded-lg p-3">
+            <p className="font-mono text-xs text-white/80">
+              <span className="text-white/60">Username:</span> demo_user<br />
+              <span className="text-white/60">Password:</span> demo123
+            </p>
+          </div>
         </div>
       </div>
     </div>

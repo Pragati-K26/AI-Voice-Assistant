@@ -4,6 +4,7 @@ Intent Recognition service using BERT-based models
 from typing import Dict, List, Optional, Tuple
 import logging
 import re
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,8 @@ class IntentRecognitionService:
         self.tokenizer = None
         self.model = None
         self.device = "cpu"
+        self.banking77_mapping = {}  # Mapping from Banking77 labels to app intents
+        self.label_to_text = {}  # Mapping from label index to label text
         if TRANSFORMERS_AVAILABLE:
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
             self.load_model()
@@ -78,23 +81,75 @@ class IntentRecognitionService:
         if not TRANSFORMERS_AVAILABLE:
             return
         try:
-            # Using DistilBERT for faster inference
-            model_name = "distilbert-base-uncased"
-            logger.info(f"Loading intent model: {model_name}")
+            # Try to load fine-tuned Banking77 model first
+            model_paths = [
+                "./models/banking77-intent",
+                "../models/banking77-intent",
+                "models/banking77-intent",
+                os.path.join(os.path.dirname(__file__), "../../models/banking77-intent"),
+            ]
             
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            # For production, you should fine-tune on Banking77 dataset
-            # For now, using a pre-trained model as base
-            self.model = AutoModelForSequenceClassification.from_pretrained(
-                model_name,
-                num_labels=len(BANKING_INTENTS)
-            )
-            self.model.to(self.device)
-            self.model.eval()
-            logger.info("Intent model loaded successfully")
+            model_loaded = False
+            for model_path in model_paths:
+                if os.path.exists(model_path) and os.path.exists(os.path.join(model_path, "config.json")):
+                    logger.info(f"Loading fine-tuned Banking77 model from: {model_path}")
+                    try:
+                        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+                        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+                        
+                        # Load intent mapping if available
+                        mapping_file = os.path.join(model_path, "intent_mapping.json")
+                        if os.path.exists(mapping_file):
+                            import json
+                            with open(mapping_file, "r") as f:
+                                mapping_data = json.load(f)
+                                self.banking77_mapping = mapping_data.get("banking77_to_app", {})
+                                logger.info(f"Loaded intent mapping with {len(self.banking77_mapping)} mappings")
+                        else:
+                            self.banking77_mapping = {}
+                        
+                        # Load label mapping if available
+                        label_mapping_file = os.path.join(model_path, "..", "label_mapping.json")
+                        if not os.path.exists(label_mapping_file):
+                            label_mapping_file = os.path.join(os.path.dirname(model_path), "label_mapping.json")
+                        if os.path.exists(label_mapping_file):
+                            import json
+                            with open(label_mapping_file, "r") as f:
+                                self.label_to_text = json.load(f)
+                                logger.info(f"Loaded label mapping with {len(self.label_to_text)} labels")
+                        else:
+                            self.label_to_text = {}
+                        
+                        self.model.to(self.device)
+                        self.model.eval()
+                        model_loaded = True
+                        logger.info("✓ Fine-tuned Banking77 model loaded successfully")
+                        break
+                    except Exception as e:
+                        logger.warning(f"Could not load model from {model_path}: {e}")
+                        continue
+            
+            if not model_loaded:
+                # Fallback to base model
+                model_name = "distilbert-base-uncased"
+                logger.info(f"Fine-tuned model not found. Loading base model: {model_name}")
+                logger.warning("Consider training the model with Banking77 dataset for better accuracy")
+                
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+                self.model = AutoModelForSequenceClassification.from_pretrained(
+                    model_name,
+                    num_labels=len(BANKING_INTENTS)
+                )
+                self.banking77_mapping = {}
+                self.label_to_text = {}
+                self.model.to(self.device)
+                self.model.eval()
+                logger.info("Base intent model loaded successfully")
         except Exception as e:
             logger.warning(f"Could not load model: {str(e)}. Using rule-based fallback.")
             self.model = None
+            self.banking77_mapping = {}
+            self.label_to_text = {}
     
     def extract_entities(self, text: str, intent: str) -> Dict:
         """
@@ -228,7 +283,18 @@ class IntentRecognitionService:
                 predicted_class = torch.argmax(probabilities, dim=-1).item()
                 confidence = probabilities[0][predicted_class].item()
             
-            intent = REVERSE_INTENTS.get(predicted_class, "other")
+            # Map Banking77 intent to application intent
+            if self.label_to_text and predicted_class in self.label_to_text:
+                banking77_intent = self.label_to_text[predicted_class]
+                # Map to application intent
+                if banking77_intent in self.banking77_mapping:
+                    intent = self.banking77_mapping[banking77_intent]
+                else:
+                    # Try to infer from Banking77 intent name
+                    intent = self._map_banking77_intent(banking77_intent)
+            else:
+                # Fallback to direct mapping (for base model)
+                intent = REVERSE_INTENTS.get(predicted_class, "other")
             
             # Extract entities
             entities = self.extract_entities(text, intent)
@@ -238,6 +304,41 @@ class IntentRecognitionService:
         except Exception as e:
             logger.error(f"Error in intent recognition: {str(e)}")
             return self._rule_based_intent(text)
+    
+    def _map_banking77_intent(self, banking77_intent: str) -> str:
+        """Map Banking77 intent to application intent"""
+        intent_lower = banking77_intent.lower().replace(" ", "_").replace("-", "_")
+        
+        # Keyword-based mapping
+        if "balance" in intent_lower:
+            return "check_balance"
+        elif "transfer" in intent_lower:
+            return "transfer_funds"
+        elif "transaction" in intent_lower or "history" in intent_lower:
+            return "view_transactions"
+        elif "loan" in intent_lower:
+            return "loan_inquiry"
+        elif "interest" in intent_lower:
+            return "interest_inquiry"
+        elif "credit" in intent_lower or "card" in intent_lower:
+            if "limit" in intent_lower:
+                return "credit_limit_inquiry"
+            else:
+                return "manage_card"
+        elif "payment" in intent_lower or "bill" in intent_lower:
+            return "payment_alert"
+        elif "spend" in intent_lower or "expense" in intent_lower:
+            return "spending_summary"
+        elif "notification" in intent_lower or "alert" in intent_lower:
+            return "view_notifications"
+        elif "reminder" in intent_lower:
+            return "set_reminder"
+        elif "greeting" in intent_lower or "hello" in intent_lower:
+            return "greeting"
+        elif "goodbye" in intent_lower or "bye" in intent_lower:
+            return "goodbye"
+        else:
+            return "other"
     
     def _rule_based_intent(self, text: str) -> Tuple[str, float, Dict]:
         """Fallback rule-based intent recognition"""

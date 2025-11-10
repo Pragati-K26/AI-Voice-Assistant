@@ -80,58 +80,69 @@ export default function BankingServices() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-8 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Banking Services</h2>
-            <p className="text-blue-100">Access all your banking needs with voice commands</p>
-          </div>
-          <div className="bg-white/20 rounded-full p-4">
-            <MicIcon />
+      <div className="glass rounded-2xl p-8 relative overflow-hidden animate-fadeInUp">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10"></div>
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl animate-float"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-bold mb-2 gradient-text">Banking Services</h2>
+              <p className="text-white/70">Access all your banking needs with voice commands</p>
+            </div>
+            <div className="glass rounded-full p-4">
+              <MicIcon />
+            </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service) => (
+        {services.map((service, index) => (
           <div
             key={service.id}
-            className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow p-6 cursor-pointer border-2 border-transparent hover:border-blue-200"
+            className="glass-hover rounded-xl p-6 cursor-pointer relative overflow-hidden group animate-fadeInUp"
+            style={{ animationDelay: `${index * 0.1}s` }}
             onClick={() => handleQuickAction(service.action)}
           >
-            <div className="text-4xl mb-4">{service.icon}</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{service.title}</h3>
-            <p className="text-gray-600 mb-4">{service.description}</p>
-            <div className="flex items-center text-blue-600 font-medium">
-              <span>Try it now</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 group-hover:from-blue-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+            <div className="relative z-10">
+              <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{service.icon}</div>
+              <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
+              <p className="text-white/70 mb-4">{service.description}</p>
+              <div className="flex items-center text-blue-300 group-hover:text-blue-200 font-medium transition-colors">
+                <span>Try it now</span>
+                <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
       {activeFeature && (
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="glass rounded-xl p-6 animate-fadeInScale">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Response</h3>
+            <h3 className="text-lg font-bold text-white">Response</h3>
             <button
               onClick={() => {
                 setActiveFeature(null)
                 setResponse('')
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-white/60 hover:text-white transition-colors"
             >
               ✕
             </button>
           </div>
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="relative">
+                <div className="w-8 h-8 border-[3px] border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
+                <div className="absolute inset-0 w-8 h-8 border-[3px] border-purple-400/20 border-t-purple-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+              </div>
             </div>
           ) : (
-            <p className="text-gray-700">{response || 'Processing...'}</p>
+            <p className="text-white/90">{response || 'Processing...'}</p>
           )}
         </div>
       )}

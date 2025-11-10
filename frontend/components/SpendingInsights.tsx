@@ -58,7 +58,15 @@ export default function SpendingInsights() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading spending data...</div>
+        <div className="glass rounded-2xl p-8 animate-fadeInScale">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className="w-8 h-8 border-[3px] border-purple-400/30 border-t-purple-400 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-8 h-8 border-[3px] border-pink-400/20 border-t-pink-400 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+            </div>
+            <div className="text-white font-medium text-lg animate-pulse">Loading spending data...</div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -68,68 +76,72 @@ export default function SpendingInsights() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-lg p-8 text-white">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Spending Insights</h2>
-            <p className="text-purple-100">Track and analyze your expenses</p>
+      <div className="glass rounded-2xl p-8 relative overflow-hidden animate-fadeInUp">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10"></div>
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl animate-float"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-3xl font-bold mb-2 gradient-text">Spending Insights</h2>
+              <p className="text-white/70">Track and analyze your expenses</p>
+            </div>
+            <div className="glass rounded-full p-4">
+              <ChartIcon />
+            </div>
           </div>
-          <div className="bg-white/20 rounded-full p-4">
-            <ChartIcon />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white/20 rounded-lg p-4">
-            <p className="text-sm text-purple-100 mb-1">Total Spending</p>
-            <p className="text-2xl font-bold">₹{totalSpending.toLocaleString('en-IN')}</p>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="glass rounded-xl p-4 animate-fadeInUp stagger-1">
+              <p className="text-sm text-white/70 mb-1">Total Spending</p>
+              <p className="text-2xl font-bold text-white gradient-text">₹{totalSpending.toLocaleString('en-IN')}</p>
+            </div>
+            <div className="glass rounded-xl p-4 animate-fadeInUp stagger-2">
+              <p className="text-sm text-white/70 mb-1">Income</p>
+              <p className="text-2xl font-bold text-white gradient-text">₹{summary?.total_income?.toLocaleString('en-IN') || '0'}</p>
+            </div>
+            <div className="glass rounded-xl p-4 animate-fadeInUp stagger-3">
+              <p className="text-sm text-white/70 mb-1">Savings</p>
+              <p className="text-2xl font-bold text-white gradient-text">₹{summary?.savings?.toLocaleString('en-IN') || '0'}</p>
+            </div>
           </div>
-          <div className="bg-white/20 rounded-lg p-4">
-            <p className="text-sm text-purple-100 mb-1">Income</p>
-            <p className="text-2xl font-bold">₹{summary?.total_income?.toLocaleString('en-IN') || '0'}</p>
-          </div>
-          <div className="bg-white/20 rounded-lg p-4">
-            <p className="text-sm text-purple-100 mb-1">Savings</p>
-            <p className="text-2xl font-bold">₹{summary?.savings?.toLocaleString('en-IN') || '0'}</p>
-          </div>
-        </div>
 
-        <div className="mt-6 flex space-x-2">
-          {['week', 'month', 'year'].map((period) => (
-            <button
-              key={period}
-              onClick={() => setSelectedPeriod(period)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedPeriod === period
-                  ? 'bg-white text-purple-600'
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
-            >
-              {period.charAt(0).toUpperCase() + period.slice(1)}
-            </button>
-          ))}
+          <div className="mt-6 flex space-x-2">
+            {['week', 'month', 'year'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setSelectedPeriod(period)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                  selectedPeriod === period
+                    ? 'glass bg-white/20 text-white border-white/30'
+                    : 'glass text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {period.charAt(0).toUpperCase() + period.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {Object.keys(categories).length > 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Category Breakdown</h3>
+        <div className="glass rounded-xl p-6 animate-fadeInUp stagger-4">
+          <h3 className="text-xl font-bold text-white mb-6">Category Breakdown</h3>
           <div className="space-y-4">
             {Object.entries(categories).map(([category, amount], index) => (
-              <div key={category}>
+              <div key={category} className="animate-slideInRight" style={{ animationDelay: `${index * 0.1}s` }}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl">{getCategoryIcon(category)}</span>
-                    <span className="font-medium text-gray-900 capitalize">{category}</span>
+                    <span className="font-medium text-white capitalize">{category}</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-gray-900">₹{(amount as number).toLocaleString('en-IN')}</span>
-                    <span className="text-sm text-gray-500 ml-2">
+                    <span className="font-bold text-white">₹{(amount as number).toLocaleString('en-IN')}</span>
+                    <span className="text-sm text-white/60 ml-2">
                       ({((amount as number) / totalSpending * 100).toFixed(1)}%)
                     </span>
                   </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div className="w-full glass bg-white/10 rounded-full h-3 overflow-hidden">
                   <div
                     className={`${getCategoryColor(index)} h-3 rounded-full transition-all duration-500`}
                     style={{ width: `${((amount as number) / maxCategoryAmount) * 100}%` }}
@@ -141,9 +153,9 @@ export default function SpendingInsights() {
 
           {/* Top Category */}
           {summary?.top_category && (
-            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-l-4 border-blue-500">
-              <p className="text-sm text-gray-600 mb-1">Top Spending Category</p>
-              <p className="text-lg font-bold text-gray-900 capitalize flex items-center">
+            <div className="mt-6 p-4 glass rounded-lg border-l-4 border-purple-400 animate-fadeInScale">
+              <p className="text-sm text-white/70 mb-1">Top Spending Category</p>
+              <p className="text-lg font-bold text-white capitalize flex items-center">
                 {getCategoryIcon(summary.top_category)}
                 <span className="ml-2">{summary.top_category}</span>
               </p>
@@ -151,10 +163,10 @@ export default function SpendingInsights() {
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md p-12 text-center">
+        <div className="glass rounded-xl p-12 text-center animate-fadeInScale">
           <div className="text-6xl mb-4">📊</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No Spending Data</h3>
-          <p className="text-gray-600">Start making transactions to see your spending insights</p>
+          <h3 className="text-xl font-bold text-white mb-2">No Spending Data</h3>
+          <p className="text-white/70">Start making transactions to see your spending insights</p>
         </div>
       )}
     </div>

@@ -61,21 +61,25 @@ export default function CardsAndServices() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-8 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Cards & Services</h2>
-            <p className="text-indigo-100">Manage your cards and request services</p>
-          </div>
-          <div className="bg-white/20 rounded-full p-4">
-            <CardIcon />
+      <div className="glass rounded-2xl p-8 relative overflow-hidden animate-fadeInUp">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10"></div>
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-400/20 rounded-full blur-2xl animate-float"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-bold mb-2 gradient-text">Cards & Services</h2>
+              <p className="text-white/70">Manage your cards and request services</p>
+            </div>
+            <div className="glass rounded-full p-4">
+              <CardIcon />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Cards */}
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Your Cards</h3>
+        <h3 className="text-xl font-bold text-white mb-4">Your Cards</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {cards.map((card) => (
             <div
@@ -142,52 +146,52 @@ export default function CardsAndServices() {
 
       {/* Services */}
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Services</h3>
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <h3 className="text-xl font-bold text-white mb-4">Services</h3>
+        <div className="glass rounded-xl p-6 animate-fadeInUp">
           <div className="space-y-4">
             <button
               onClick={requestChequebook}
               disabled={loading}
-              className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
+              className="w-full glass-hover flex items-center justify-between p-4 rounded-lg transition-all duration-300 group"
             >
               <div className="flex items-center space-x-3">
                 <div className="text-3xl">📄</div>
                 <div className="text-left">
-                  <p className="font-bold text-gray-900 group-hover:text-blue-600">Request Cheque Book</p>
-                  <p className="text-sm text-gray-600">Get a new cheque book delivered to your address</p>
+                  <p className="font-bold text-white group-hover:text-blue-300">Request Cheque Book</p>
+                  <p className="text-sm text-white/70">Get a new cheque book delivered to your address</p>
                 </div>
               </div>
-              <svg className="w-6 h-6 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white/60 group-hover:text-blue-300 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
             <button
-              className="w-full flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group"
+              className="w-full glass-hover flex items-center justify-between p-4 rounded-lg transition-all duration-300 group"
             >
               <div className="flex items-center space-x-3">
                 <div className="text-3xl">🏦</div>
                 <div className="text-left">
-                  <p className="font-bold text-gray-900 group-hover:text-green-600">Branch Locator</p>
-                  <p className="text-sm text-gray-600">Find nearest bank branch or ATM</p>
+                  <p className="font-bold text-white group-hover:text-green-300">Branch Locator</p>
+                  <p className="text-sm text-white/70">Find nearest bank branch or ATM</p>
                 </div>
               </div>
-              <svg className="w-6 h-6 text-gray-400 group-hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white/60 group-hover:text-green-300 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
             <button
-              className="w-full flex items-center justify-between p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors group"
+              className="w-full glass-hover flex items-center justify-between p-4 rounded-lg transition-all duration-300 group"
             >
               <div className="flex items-center space-x-3">
                 <div className="text-3xl">💼</div>
                 <div className="text-left">
-                  <p className="font-bold text-gray-900 group-hover:text-purple-600">Investment Services</p>
-                  <p className="text-sm text-gray-600">Explore investment options and mutual funds</p>
+                  <p className="font-bold text-white group-hover:text-purple-300">Investment Services</p>
+                  <p className="text-sm text-white/70">Explore investment options and mutual funds</p>
                 </div>
               </div>
-              <svg className="w-6 h-6 text-gray-400 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white/60 group-hover:text-purple-300 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
