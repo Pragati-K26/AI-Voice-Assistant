@@ -1,0 +1,23 @@
+runtime: python311
+service: default
+
+env_variables:
+  DATABASE_URL: 'sqlite:///./banking_assistant.db'
+  WHISPER_MODEL: 'base'
+  TTS_ENGINE: 'gtts'
+  TTS_LANGUAGE: 'en'
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.6
+
+resources:
+  cpu: 2
+  memory_gb: 2
+  disk_size_gb: 10
+
+handlers:
+  - url: /.*
+    script: auto
+
