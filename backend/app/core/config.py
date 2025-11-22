@@ -2,7 +2,9 @@
 Application configuration
 """
 from pydantic_settings import BaseSettings
-from typing import List
+from pydantic import field_validator
+from typing import List, Union
+import json
 
 
 class Settings(BaseSettings):
@@ -13,12 +15,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     SECRET_KEY: str = "your-secret-key-change-in-production"
     
-    # CORS
-    ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:5173",
-    ]
+    # CORS - can be JSON array or comma-separated string
+    ALLOWED_ORIGINS: Union[List[str], str] = "*"
     
     # Database
     DATABASE_URL: str = "sqlite:///./banking_assistant.db"
@@ -45,9 +43,31 @@ class Settings(BaseSettings):
     OTP_EXPIRY_MINUTES: int = 5
     VOICE_PIN_ENABLED: bool = True
     
+    # Gemini API
+    GEMINI_API_KEY: str = ""
+    
     # Google Cloud
     GCP_PROJECT_ID: str = ""
     GCP_BUCKET_NAME: str = ""
+    
+    @field_validator('ALLOWED_ORIGINS', mode='before')
+    @classmethod
+    def parse_origins(cls, v):
+        """Parse ALLOWED_ORIGINS from various formats"""
+        if isinstance(v, str):
+            # Handle "*" for all origins
+            if v == "*":
+                return ["*"]
+            # Try to parse as JSON first
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return parsed
+            except (json.JSONDecodeError, ValueError):
+                pass
+            # Fall back to comma-separated
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
     
     class Config:
         env_file = ".env"
