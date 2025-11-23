@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import BellIcon from './icons/BellIcon'
 
-const API_URL = process.env.API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ai-voice-assistant-evgf.onrender.com'
 
 export default function NotificationsTab() {
   const { token } = useAuth()

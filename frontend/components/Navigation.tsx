@@ -14,10 +14,10 @@ export default function Navigation({ isAuthenticated = false, user = null }: Nav
   const router = useRouter()
 
   const navItems = [
-    { label: 'Features', href: '/features' },
-    { label: 'Pricing', href: '/pricing' },
+    { label: 'Features', href: '#' },
+    { label: 'Pricing', href: '#' },
     { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Contact', href: '#' },
   ]
 
   return (

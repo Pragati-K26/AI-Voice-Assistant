@@ -1,17 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import MicIcon from './icons/MicIcon'
 
-const API_URL = process.env.API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ai-voice-assistant-evgf.onrender.com'
 
-export default function BankingServices() {
+interface BankingServicesProps {
+  initialService?: string | null
+}
+
+export default function BankingServices({ initialService }: BankingServicesProps) {
   const { token } = useAuth()
-  const [activeFeature, setActiveFeature] = useState<string | null>(null)
+  const [activeFeature, setActiveFeature] = useState<string | null>(initialService || null)
   const [response, setResponse] = useState<string>('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (initialService) {
+      setActiveFeature(initialService)
+    }
+  }, [initialService])
 
   const handleQuickAction = async (text: string) => {
     setLoading(true)

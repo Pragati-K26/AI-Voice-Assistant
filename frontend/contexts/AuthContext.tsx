@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_URL = process.env.API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ai-voice-assistant-evgf.onrender.com'
 
 interface User {
   id: number
@@ -11,6 +11,8 @@ interface User {
   email: string
   account_number: string
   balance: number
+  credit_limit?: number
+  savings?: number
 }
 
 interface AuthContextType {
@@ -68,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         `${API_URL}/api/auth/login`,
         params.toString(),
         {
-          headers: { 
+          headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         }
@@ -78,7 +80,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(access_token)
       localStorage.setItem('token', access_token)
 
-      await fetchUser(access_token)
+      try {
+        await fetchUser(access_token);
+      } catch (e) {
+        // Demo user may not exist in DB; ignore fetch error
+        console.warn('Demo user fetch failed, proceeding with token only');
+      }
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || error.message || 'Login failed'
       throw new Error(errorMessage)
