@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import LandingPage from '@/components/LandingPage'
 import VoiceAssistant from '@/components/VoiceAssistant'
-import Login from '@/components/Login'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import Tabs from '@/components/Tabs'
 import DashboardOverview from '@/components/DashboardOverview'
@@ -42,7 +42,7 @@ function MainContent() {
   }
 
   if (!isAuthenticated) {
-    return <Login />
+    return <LandingPage />
   }
 
   const tabs = [
