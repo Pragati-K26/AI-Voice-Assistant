@@ -5,10 +5,8 @@ export const metadata: Metadata = {
   title: 'AI Voice Banking Assistant',
   description: 'Secure voice-based banking operations',
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
-    ],
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
 }

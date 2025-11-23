@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://ai-voice-assistant-evgf.onrender.com/api/:path*"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.svg"
     }
   ],
   "headers": [
