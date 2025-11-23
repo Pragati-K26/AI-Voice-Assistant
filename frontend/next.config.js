@@ -8,6 +8,10 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@/components'],
   },
+  // Disable static optimization that might cause prefetching issues
+  output: undefined,
+  // Skip build ID generation that might cause issues
+  generateBuildId: undefined,
 }
 
 module.exports = nextConfig
