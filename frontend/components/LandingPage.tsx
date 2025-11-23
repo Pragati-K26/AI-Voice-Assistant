@@ -70,14 +70,14 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navigation isAuthenticated={isAuthenticated} user={user} />
-      
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-50 to-blue-50 pt-24 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-400 rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -86,11 +86,11 @@ export default function LandingPage() {
                   Banking Made Simple, Secure, and Smart
                 </h1>
                 <p className="text-xl text-slate-600 leading-relaxed max-w-2xl">
-                  Experience the future of financial management with our voice-powered banking platform. 
+                  Experience the future of financial management with our voice-powered banking platform.
                   Secure, intuitive, and designed for the modern professional.
                 </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => router.push('/login')}
@@ -180,42 +180,52 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Our Story Section */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-serif font-bold text-slate-900 mb-4">
-              Trusted by Professionals
+              Our Story
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              See what our users have to say about their experience
+              This project is developed as part of GHCI Hackathon.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-serif font-bold text-slate-900 mb-4">
+              Meet the Team
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              The minds behind VoiceBank
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { name: 'Nilam Bhojwani', role: 'AI/ML Developer' },
+              { name: 'Kanak Meshram', role: 'Frontend Developer' },
+              { name: 'Pragati Kesharwani', role: 'Database Analytics and Manager' },
+              { name: 'Adhishree Shilledar', role: 'Lead Researcher and Marketing Team' },
+            ].map((member, index) => (
               <div
                 key={index}
-                className="bg-white p-8 rounded-xl shadow-md border border-slate-200 hover:shadow-lg transition-all duration-300"
+                className="p-6 bg-slate-50 rounded-xl border border-slate-200 text-center hover:shadow-lg transition-all duration-300"
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div>
-                    <div className="font-semibold text-slate-900">{testimonial.name}</div>
-                    <div className="text-sm text-slate-600">{testimonial.role}</div>
-                    <div className="text-sm text-slate-500">{testimonial.company}</div>
-                  </div>
+                <div className="w-16 h-16 bg-slate-200 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl">
+                  {member.name.charAt(0)}
                 </div>
-                <p className="text-slate-700 leading-relaxed italic">
-                  "{testimonial.content}"
+                <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-slate-600 text-sm">
+                  {member.role}
                 </p>
-                <div className="mt-4 flex text-yellow-400">
-                  {'★'.repeat(5)}
-                </div>
               </div>
             ))}
           </div>

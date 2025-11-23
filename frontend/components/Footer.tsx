@@ -7,28 +7,28 @@ export default function Footer() {
 
   const footerLinks = {
     product: [
-      { label: 'Features', href: '/features' },
-      { label: 'Pricing', href: '/pricing' },
-      { label: 'Security', href: '/security' },
-      { label: 'API', href: '/api' },
+      { label: 'Features', href: '#' },
+      { label: 'Pricing', href: '#' },
+      { label: 'Security', href: '#' },
+      { label: 'API', href: '#' },
     ],
     company: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Press', href: '/press' },
+      { label: 'About Us', href: '#' },
+      { label: 'Careers', href: '#' },
+      { label: 'Blog', href: '#' },
+      { label: 'Press', href: '#' },
     ],
     resources: [
-      { label: 'Documentation', href: '/docs' },
-      { label: 'Support', href: '/support' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Documentation', href: '#' },
+      { label: 'Support', href: '#' },
+      { label: 'Contact', href: '#' },
+      { label: 'Privacy Policy', href: '#' },
     ],
     legal: [
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Cookie Policy', href: '/cookies' },
-      { label: 'GDPR', href: '/gdpr' },
+      { label: 'Terms of Service', href: '#' },
+      { label: 'Privacy Policy', href: '#' },
+      { label: 'Cookie Policy', href: '#' },
+      { label: 'GDPR', href: '#' },
     ],
   }
 
@@ -47,7 +47,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-slate-400 mb-6 leading-relaxed">
-              Secure, intelligent banking solutions for the modern professional. 
+              Secure, intelligent banking solutions for the modern professional.
               Experience the future of financial management.
             </p>
             <div className="flex space-x-4">
