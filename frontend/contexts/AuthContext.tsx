@@ -63,8 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // OAuth2PasswordRequestForm expects application/x-www-form-urlencoded
       const params = new URLSearchParams()
-      params.append('username', username)
+      params.append('username', username.trim())
       params.append('password', password)
+
+      console.log('Attempting login to:', `${API_URL}/api/auth/login`)
 
       const response = await axios.post(
         `${API_URL}/api/auth/login`,
@@ -77,6 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       )
 
       const { access_token } = response.data
+      if (!access_token) {
+        throw new Error('No access token received from server')
+      }
+
       setToken(access_token)
       localStorage.setItem('token', access_token)
 
@@ -85,8 +91,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         // Demo user may not exist in DB; ignore fetch error
         console.warn('Demo user fetch failed, proceeding with token only');
+        // For demo user, set a mock user object
+        if (!user) {
+          setUser({
+            id: 0,
+            username: 'demo_user',
+            email: 'demo@example.com',
+            account_number: 'DEMO12345',
+            balance: 0.0,
+          })
+          setIsAuthenticated(true)
+        }
       }
     } catch (error: any) {
+      console.error('Login error:', error)
       const errorMessage = error.response?.data?.detail || error.message || 'Login failed'
       throw new Error(errorMessage)
     }
