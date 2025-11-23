@@ -8,8 +8,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@/components'],
   },
-  // Disable static optimization to prevent prefetching
-  output: 'standalone',
 }
 
 module.exports = nextConfig
