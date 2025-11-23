@@ -96,18 +96,17 @@ export default function Footer() {
                   {link.isLink ? (
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="hover:text-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
                   ) : (
-                    <a
-                      href={link.href}
+                    <span
                       className="hover:text-white transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => e.preventDefault()}
                     >
                       {link.label}
-                    </a>
+                    </span>
                   )}
                 </li>
               ))}
@@ -123,18 +122,17 @@ export default function Footer() {
                   {link.isLink ? (
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="hover:text-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
                   ) : (
-                    <a
-                      href={link.href}
+                    <span
                       className="hover:text-white transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => e.preventDefault()}
                     >
                       {link.label}
-                    </a>
+                    </span>
                   )}
                 </li>
               ))}
@@ -150,18 +148,17 @@ export default function Footer() {
                   {link.isLink ? (
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="hover:text-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
                   ) : (
-                    <a
-                      href={link.href}
+                    <span
                       className="hover:text-white transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => e.preventDefault()}
                     >
                       {link.label}
-                    </a>
+                    </span>
                   )}
                 </li>
               ))}
@@ -177,18 +174,17 @@ export default function Footer() {
                   {link.isLink ? (
                     <Link
                       href={link.href}
+                      prefetch={false}
                       className="hover:text-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
                   ) : (
-                    <a
-                      href={link.href}
+                    <span
                       className="hover:text-white transition-colors duration-200 cursor-pointer"
-                      onClick={(e) => e.preventDefault()}
                     >
                       {link.label}
-                    </a>
+                    </span>
                   )}
                 </li>
               ))}

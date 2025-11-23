@@ -67,6 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       params.append('password', password)
 
       console.log('Attempting login to:', `${API_URL}/api/auth/login`)
+      console.log('API_URL from env:', process.env.NEXT_PUBLIC_API_URL)
+      console.log('Username:', username.trim())
 
       const response = await axios.post(
         `${API_URL}/api/auth/login`,
@@ -75,8 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          withCredentials: false, // Don't send cookies
         }
       )
+
+      console.log('Login response status:', response.status)
+      console.log('Login response data:', response.data)
 
       const { access_token } = response.data
       if (!access_token) {
@@ -104,8 +110,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (error: any) {
-      console.error('Login error:', error)
-      const errorMessage = error.response?.data?.detail || error.message || 'Login failed'
+      console.error('Login error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+        }
+      })
+      
+      let errorMessage = 'Login failed'
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Invalid username or password. Please check your credentials.'
+      } else if (error.response?.status === 0 || error.message?.includes('Network')) {
+        errorMessage = 'Unable to connect to server. Please check your internet connection and try again.'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       throw new Error(errorMessage)
     }
   }
