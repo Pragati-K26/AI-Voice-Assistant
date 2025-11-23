@@ -7,28 +7,28 @@ export default function Footer() {
 
   const footerLinks = {
     product: [
-      { label: 'Features', href: '#' },
-      { label: 'Pricing', href: '#' },
-      { label: 'Security', href: '#' },
-      { label: 'API', href: '#' },
+      { label: 'Features', href: '/features', isLink: true },
+      { label: 'Pricing', href: '/pricing', isLink: true },
+      { label: 'Security', href: '#', isLink: false },
+      { label: 'API', href: '#', isLink: false },
     ],
     company: [
-      { label: 'About Us', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Press', href: '#' },
+      { label: 'About Us', href: '/about', isLink: true },
+      { label: 'Careers', href: '#', isLink: false },
+      { label: 'Blog', href: '#', isLink: false },
+      { label: 'Press', href: '#', isLink: false },
     ],
     resources: [
-      { label: 'Documentation', href: '#' },
-      { label: 'Support', href: '#' },
-      { label: 'Contact', href: '#' },
-      { label: 'Privacy Policy', href: '#' },
+      { label: 'Documentation', href: '#', isLink: false },
+      { label: 'Support', href: '#', isLink: false },
+      { label: 'Contact', href: '/contact', isLink: true },
+      { label: 'Privacy Policy', href: '#', isLink: false },
     ],
     legal: [
-      { label: 'Terms of Service', href: '#' },
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Cookie Policy', href: '#' },
-      { label: 'GDPR', href: '#' },
+      { label: 'Terms of Service', href: '#', isLink: false },
+      { label: 'Privacy Policy', href: '#', isLink: false },
+      { label: 'Cookie Policy', href: '#', isLink: false },
+      { label: 'GDPR', href: '#', isLink: false },
     ],
   }
 
@@ -93,12 +93,22 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.isLink ? (
+                    <Link
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200 cursor-pointer"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -110,12 +120,22 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.isLink ? (
+                    <Link
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200 cursor-pointer"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -127,12 +147,22 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.isLink ? (
+                    <Link
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200 cursor-pointer"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -144,12 +174,22 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-white transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.isLink ? (
+                    <Link
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="hover:text-white transition-colors duration-200 cursor-pointer"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

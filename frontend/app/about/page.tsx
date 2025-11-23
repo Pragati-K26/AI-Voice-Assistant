@@ -129,10 +129,10 @@ function AboutContent() {
             We're always looking for talented individuals who share our passion for innovation and excellence.
           </p>
           <a
-            href="/careers"
+            href="/contact"
             className="inline-block px-10 py-5 bg-white text-slate-900 rounded-lg font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-slate-50 transform hover:-translate-y-1"
           >
-            View Open Positions
+            Contact Us
           </a>
         </div>
       </section>
