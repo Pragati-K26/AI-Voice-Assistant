@@ -20,9 +20,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta name="next-router-prefetch" content="off" />
-      </head>
       <body className={inter.className} suppressHydrationWarning>{children}</body>
     </html>
   )
